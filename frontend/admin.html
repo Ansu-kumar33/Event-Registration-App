@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="admin.css" />
+    <script src="admin.js" defer></script>
+  </head>
+  <body>
+    <main class="admin-shell">
+      <section class="admin-card">
+        <p class="eyebrow">Admin</p>
+        <h1>Event Dashboard</h1>
+        <p class="intro">
+          Review live event totals and the latest event and registration activity from the backend API.
+        </p>
+
+        <div class="toolbar">
+          <button id="refreshDashboardBtn" type="button">Refresh Dashboard</button>
+          <a href="index.html#admin-dashboard">Open Main App Dashboard</a>
+        </div>
+
+        <p id="adminMessage" class="status" aria-live="polite"></p>
+
+        <div class="stats-grid">
+          <article class="stat-card">
+            <span class="stat-label">Total Events</span>
+            <strong id="adminTotalEvents">0</strong>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-label">Total Registrations</span>
+            <strong id="adminTotalRegistrations">0</strong>
+          </article>
+        </div>
+
+        <div class="panel-grid">
+          <article class="panel-card">
+            <h2>Recent Events</h2>
+            <ul id="adminRecentEvents" class="record-list">
+              <li>No recent events yet.</li>
+            </ul>
+          </article>
+
+          <article class="panel-card">
+            <h2>Recent Registrations</h2>
+            <ul id="adminRecentRegistrations" class="record-list">
+              <li>No recent registrations yet.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
