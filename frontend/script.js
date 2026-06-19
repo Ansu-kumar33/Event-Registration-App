@@ -1,3 +1,4 @@
+export const initializeLegacyApp = () => {
 const DEFAULT_SECTION = "home"
 const sections = document.querySelectorAll(".page-section")
 const navLinks = document.querySelectorAll("[data-section-link]")
@@ -37,6 +38,16 @@ const apiBaseUrl =
 
 let allEvents = []
 let editingEventId = null
+
+if (!sections.length) {
+  return
+}
+
+if (document.body.dataset.legacyAppInitialized === "true") {
+  return
+}
+
+document.body.dataset.legacyAppInitialized = "true"
 
 const getSectionIdFromHash = () => {
   const hashValue = window.location.hash.replace(/^#/, "")
@@ -578,3 +589,4 @@ const initializeApp = async () => {
 }
 
 initializeApp()
+}
