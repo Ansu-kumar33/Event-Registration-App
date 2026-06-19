@@ -1,5 +1,6 @@
 # Event Registration System
 
+<<<<<<< HEAD
 Event Registration System is a full-stack web application for creating events, browsing upcoming events, registering attendees, and reviewing activity from an admin dashboard. The project combines a React frontend, a static multi-page interface, and a Node.js/Express API backed by MongoDB.
 
 ## Project Overview
@@ -36,20 +37,81 @@ This repository provides a simple event management workflow for small teams, cam
 - A Gmail account with an app password for email delivery
 
 ### Setup
+=======
+A full-stack web application that allows users to register for events through a simple and user-friendly interface.
+
+## Features
+
+- User Registration
+- Event Registration
+- Responsive Frontend
+- REST API Backend
+- MongoDB Database Integration
+- Form Validation
+
+## Technologies Used
+
+### Frontend
+- HTML
+- CSS
+- JavaScript
+
+### Backend
+- Node.js
+- Express.js
+
+### Database
+- MongoDB
+
+## Project Structure
+
+```
+Event-Registration-App/
+│
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+│
+├── backend/
+│   ├── server.js
+│   ├── routes/
+│   └── models/
+│
+├── package.json
+└── README.md
+```
+
+## Installation
+>>>>>>> 2dcf973c662b844a7ff6d2d975ba9ea200fbe4fb
 
 1. Clone the repository:
 
 ```bash
+<<<<<<< HEAD
 git clone <repository-url>
 cd Event-Registration-App
 ```
 
 2. Install root dependencies:
+=======
+git clone https://github.com/Ansu-kumar33/Event-Registration-App.git
+```
+
+2. Navigate to the project directory:
+
+```bash
+cd Event-Registration-App
+```
+
+3. Install dependencies:
+>>>>>>> 2dcf973c662b844a7ff6d2d975ba9ea200fbe4fb
 
 ```bash
 npm install
 ```
 
+<<<<<<< HEAD
 3. Install backend dependencies:
 
 ```bash
@@ -72,11 +134,17 @@ copy .env.example .env
 ```
 
 6. Start the backend server:
+=======
+4. Configure MongoDB connection in your backend.
+
+5. Start the server:
+>>>>>>> 2dcf973c662b844a7ff6d2d975ba9ea200fbe4fb
 
 ```bash
 npm start
 ```
 
+<<<<<<< HEAD
 If `npm start` is not defined in your local setup, run:
 
 ```bash
@@ -201,3 +269,24 @@ Example markdown:
 
 **Ansu Kumar**  
 Email: `ansu33524@gmail.com`
+=======
+## Usage
+
+1. Open the application in your browser.
+2. Fill out the registration form.
+3. Submit the form to register for an event.
+4. Registered data will be stored in MongoDB.
+
+## Future Enhancements
+
+- User Authentication
+- Event Management Dashboard
+- Email Notifications
+- Admin Panel
+
+## Author
+
+**Ansu Kumar**
+
+GitHub: https://github.com/Ansu-kumar33
+>>>>>>> 2dcf973c662b844a7ff6d2d975ba9ea200fbe4fb
