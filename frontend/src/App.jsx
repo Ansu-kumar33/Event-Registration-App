@@ -7,7 +7,10 @@ const initialFormData = {
   eventId: '',
 }
 
-const apiBaseUrl = 'http://localhost:5000/api'
+const apiBaseUrl =
+  window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5000/api'
+    : 'https://event-registration-app-8eei.onrender.com/api'
 
 function App() {
   const [formData, setFormData] = useState(initialFormData)

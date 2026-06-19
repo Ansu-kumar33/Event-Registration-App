@@ -33,7 +33,7 @@ const registrationEventIdInput = document.getElementById("eventId")
 const apiBaseUrl =
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000/api"
-    : `${window.location.origin.replace(/\/$/, "")}/api`
+    : "https://event-registration-app-8eei.onrender.com/api"
 
 let allEvents = []
 let editingEventId = null
@@ -419,7 +419,7 @@ const loadDashboard = async () => {
   } catch (error) {
     dashboardMessage.textContent =
       error.message ||
-      "Could not load the dashboard. Please confirm the backend server is running on port 5000."
+      "Could not load the dashboard. Please confirm the deployed backend is available and try again."
     dashboardMessage.className = "status error"
     console.error("Error loading dashboard:", error)
   }

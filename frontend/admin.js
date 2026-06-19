@@ -1,7 +1,7 @@
 const dashboardUrl =
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000/api/dashboard"
-    : `${window.location.origin.replace(/\/$/, "")}/api/dashboard`
+    : "https://event-registration-app-8eei.onrender.com/api/dashboard"
 
 const refreshButton = document.getElementById("refreshDashboardBtn")
 const adminMessage = document.getElementById("adminMessage")

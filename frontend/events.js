@@ -1,7 +1,7 @@
 const apiUrl =
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000/api/events"
-    : `${window.location.origin.replace(/\/$/, "")}/api/events`
+    : "https://event-registration-app-8eei.onrender.com/api/events"
 
 const loadEventsBtn = document.getElementById("loadEventsBtn")
 const statusMessage = document.getElementById("statusMessage")
