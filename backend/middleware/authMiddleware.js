@@ -20,14 +20,24 @@ const protect = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("Auth middleware failed:", error);
-    res.status(401).json({ message: "Invalid or expired authentication token." });
+    console.error(error);
+    res.status(401).json({
+      success: false,
+      message: "Invalid or expired authentication token.",
+      error: error.message,
+      route: `${req.method} ${req.originalUrl}`,
+    });
   }
 };
 
 const requireRole = (...roles) => (req, res, next) => {
   if (!req.user || !roles.includes(req.user.role)) {
-    return res.status(403).json({ message: "You do not have permission to perform this action." });
+    return res.status(403).json({
+      success: false,
+      message: "You do not have permission to perform this action.",
+      requiredRoles: roles,
+      currentRole: req.user?.role || null,
+    });
   }
 
   next();

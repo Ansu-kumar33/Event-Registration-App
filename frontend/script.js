@@ -1,11 +1,13 @@
 const AUTH_TOKEN_KEY = "event_registration_auth_token"
 const AUTH_USER_KEY = "event_registration_auth_user"
 const DEFAULT_SECTION = "home"
+const RENDER_API_BASE_URL = "https://event-registration-app-8eei.onrender.com/api"
+const configuredApiBaseUrl = typeof import.meta !== "undefined" ? import.meta.env?.VITE_API_BASE_URL?.trim() : ""
 
 const apiBaseUrl =
   window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:5000/api"
-    : "https://event-registration-app-8eei.onrender.com/api"
+    : configuredApiBaseUrl || RENDER_API_BASE_URL
 
 export const initializeLegacyApp = () => {
   const sections = document.querySelectorAll(".page-section")
@@ -162,6 +164,29 @@ export const initializeLegacyApp = () => {
     } catch {
       return fallbackMessage
     }
+  }
+
+  const parseJsonSafely = async (response) => {
+    try {
+      return await response.json()
+    } catch {
+      return null
+    }
+  }
+
+  const logAuthFailure = ({ action, url, requestBody, response, responseData, error }) => {
+    if (error && typeof error === "object") {
+      error.loggedToConsole = true
+    }
+
+    console.error(error || new Error(`${action} request failed`))
+    console.error(`[AUTH ${action.toUpperCase()}] request failed`, {
+      url,
+      status: response?.status || null,
+      statusText: response?.statusText || null,
+      requestBody,
+      responseData,
+    })
   }
 
   const setMessage = (element, text, type = "") => {
@@ -745,23 +770,27 @@ export const initializeLegacyApp = () => {
   loginForm?.addEventListener("submit", async (event) => {
     event.preventDefault()
     resetMessages(loginMessage, signupMessage)
+    const requestUrl = `${apiBaseUrl}/auth/login`
+    const requestBody = {
+      email: loginEmailInput?.value.trim() || "",
+      password: loginPasswordInput?.value || "",
+    }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/login`, {
+      const response = await fetch(requestUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email: loginEmailInput?.value.trim() || "",
-          password: loginPasswordInput?.value || "",
-        }),
+        body: JSON.stringify(requestBody),
       })
 
-      const responseData = await response.json()
+      const responseData = await parseJsonSafely(response)
 
       if (!response.ok) {
-        throw new Error(responseData.message || "Login failed.")
+        const error = new Error(responseData?.message || responseData?.error || "Login failed.")
+        logAuthFailure({ action: "login", url: requestUrl, requestBody, response, responseData, error })
+        throw error
       }
 
       setAuthSession(responseData.token, responseData.user)
@@ -781,7 +810,10 @@ export const initializeLegacyApp = () => {
       showSection(nextSection)
       await runSectionLoaders(nextSection)
     } catch (error) {
-      console.error("Login failed:", error)
+      if (!error.loggedToConsole) {
+        logAuthFailure({ action: "login", url: requestUrl, requestBody, error })
+        error.loggedToConsole = true
+      }
       setMessage(loginMessage, error.message || "Login failed.", "error")
     }
   })
@@ -789,24 +821,28 @@ export const initializeLegacyApp = () => {
   signupForm?.addEventListener("submit", async (event) => {
     event.preventDefault()
     resetMessages(signupMessage, loginMessage)
+    const requestUrl = `${apiBaseUrl}/auth/signup`
+    const requestBody = {
+      name: signupNameInput?.value.trim() || "",
+      email: signupEmailInput?.value.trim() || "",
+      password: signupPasswordInput?.value || "",
+    }
 
     try {
-      const response = await fetch(`${apiBaseUrl}/auth/signup`, {
+      const response = await fetch(requestUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: signupNameInput?.value.trim() || "",
-          email: signupEmailInput?.value.trim() || "",
-          password: signupPasswordInput?.value || "",
-        }),
+        body: JSON.stringify(requestBody),
       })
 
-      const responseData = await response.json()
+      const responseData = await parseJsonSafely(response)
 
       if (!response.ok) {
-        throw new Error(responseData.message || "Signup failed.")
+        const error = new Error(responseData?.message || responseData?.error || "Signup failed.")
+        logAuthFailure({ action: "signup", url: requestUrl, requestBody, response, responseData, error })
+        throw error
       }
 
       signupForm.reset()
@@ -814,7 +850,10 @@ export const initializeLegacyApp = () => {
       setMessage(loginMessage, "Your account is ready. Please log in.", "success")
       showSection("login")
     } catch (error) {
-      console.error("Signup failed:", error)
+      if (!error.loggedToConsole) {
+        logAuthFailure({ action: "signup", url: requestUrl, requestBody, error })
+        error.loggedToConsole = true
+      }
       setMessage(signupMessage, error.message || "Signup failed.", "error")
     }
   })

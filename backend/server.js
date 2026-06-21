@@ -1,16 +1,22 @@
 const express = require("express");
+const fs = require("fs");
 const mongoose = require("mongoose");
 const path = require("path");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
 const envPath = path.join(__dirname, ".env");
-const dotenvResult = dotenv.config({ path: envPath });
+const hasLocalEnvFile = fs.existsSync(envPath);
+const dotenvResult = hasLocalEnvFile ? dotenv.config({ path: envPath }) : { error: null };
 
-if (dotenvResult.error) {
-  console.error("Failed to load backend/.env:", dotenvResult.error.message);
+if (hasLocalEnvFile && dotenvResult.error) {
+  console.error(dotenvResult.error);
 } else {
-  console.log(`backend/.env loaded from ${envPath}`);
+  console.log(
+    hasLocalEnvFile
+      ? `backend/.env loaded from ${envPath}`
+      : "backend/.env not found. Using environment variables provided by the host."
+  );
 }
 
 const authRoutes = require("./routes/authRoutes");
@@ -20,6 +26,28 @@ const { connectDB, getMongoDiagnostics } = require("./config/db");
 
 const app = express();
 const registeredRoutes = [];
+const allowedOrigins = new Set([
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.FRONTEND_ORIGIN,
+].filter(Boolean));
+
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.has(origin) || /https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
 
 const registerRoutes = (basePath, router) => {
   registeredRoutes.push(`USE ${basePath}`);
@@ -50,12 +78,9 @@ const printRegisteredRoutes = () => {
 
 // Middleware
 app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
+  cors(corsOptions)
 );
-app.options(/.*/, cors({ origin: true, credentials: true }));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
 // Routes
@@ -105,6 +130,30 @@ app.get("/api/db-status", (req, res) => {
       username: diagnostics.username || null,
       parseError: diagnostics.parseError || null,
     },
+  });
+});
+
+app.use((error, req, res, next) => {
+  if (!error) {
+    return next();
+  }
+
+  console.error(error);
+
+  if (error.message?.startsWith("CORS blocked for origin:")) {
+    return res.status(403).json({
+      success: false,
+      message: "CORS request blocked.",
+      error: error.message,
+      route: `${req.method} ${req.originalUrl}`,
+    });
+  }
+
+  return res.status(500).json({
+    success: false,
+    message: "Unexpected server error.",
+    error: error.message,
+    route: `${req.method} ${req.originalUrl}`,
   });
 });
 

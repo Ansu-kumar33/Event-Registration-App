@@ -1,14 +1,20 @@
 const mongoose = require("mongoose");
+const fs = require("fs");
 const path = require("path");
 const dotenv = require("dotenv");
 
 const envPath = path.join(__dirname, "..", ".env");
-const dotenvResult = dotenv.config({ path: envPath });
+const hasLocalEnvFile = fs.existsSync(envPath);
+const dotenvResult = hasLocalEnvFile ? dotenv.config({ path: envPath }) : { error: null };
 
-if (dotenvResult.error) {
-  console.error("Failed to load environment file for MongoDB config:", dotenvResult.error.message);
+if (hasLocalEnvFile && dotenvResult.error) {
+  console.error(dotenvResult.error);
 } else {
-  console.log(`Environment variables loaded from ${envPath}`);
+  console.log(
+    hasLocalEnvFile
+      ? `Environment variables loaded from ${envPath}`
+      : "Using host environment variables for MongoDB config."
+  );
 }
 
 const buildMongoDiagnostics = (uri) => {
@@ -81,7 +87,7 @@ const connectDB = async () => {
   }
 
   if (!mongoUri) {
-    throw new Error("MONGO_URI is not configured in backend/.env");
+    throw new Error("MONGO_URI is not configured in process.env.MONGO_URI");
   }
 
   if (!diagnostics.formatLooksValid) {
